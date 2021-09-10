@@ -25,7 +25,9 @@ To cite this paper and the data saved in this repository, please  using the foll
 
  title =         {Data-Driven Project Portfolio Selection: Stochastic Programming Formulations with Reliability and Time to Market Requirements},
 
-year =          {2021 -- revised and resubmitted},
+volume =  {revised and resubmitted},
+
+year =          {2021},
 }  
 
 <!-- blank line --> 
