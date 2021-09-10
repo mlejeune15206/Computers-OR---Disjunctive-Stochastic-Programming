@@ -50,7 +50,7 @@ This repository includes:
 
 &nbsp;&nbsp;&nbsp;&nbsp; H. Heitsch, W. Roemisch, C. Strugarek. Stability of Multistage Stochastic Programs. *SIAM Journal on Optimization* 17, 511-525. 2006.
 
-$\qquad$ and the original package file scenred2 at:
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; and the original package file scenred2 at:
 www.gams.com/latest/docs/T_SCENRED2.html.
 
 5.	**GAMS Model File** (with extension ".gms) in the folder named "GAMS_Files". 
