@@ -46,15 +46,15 @@ This repository includes:
 
 3.	**AMPL Script Files** (with extension ".run") in the folder named "AMPL_Files" that contain the implmentation of the decompostion method propod in this study. 
 
-4.	**GAMS Command File** (with extension ".run") in the folder named "GAMS_Files") that implements the scenarion generation method proposed by Heitsch et al. (2008) and that we slightly adapted to this study. The scenario generation method is presented in:
+4.	**GAMS Command Files** (with extension ".run") in the folder named "GAMS_Files") that implements the scenarion generation method proposed by Heitsch et al. (2008) and that we slightly adapted to this study. The scenario generation method is presented in:
 
 H. Heitsch, W. Roemisch, C. Strugarek. Stability of Multistage Stochastic Programs. *SIAM Journal on Optimization* 17, 511-525. 2006.
 
 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; and the original package file scenred2 is available at:
 www.gams.com/latest/docs/T_SCENRED2.html.
 
-5.	**GAMS Model File** (with extension ".gms) in the folder named "GAMS_Files". 
+5.	**GAMS Model Files** (with extension ".gms) in the folder named "GAMS_Files". 
 
-6.	**GAMS Parameter File** (with extension ".opt") in the folder named "GAMS_Files" that specifies the options used for GAMS. 
+6.	**GAMS Parameter Files** (with extension ".opt") in the folder named "GAMS_Files" that specifies the options used for GAMS. 
 
-7.	**Excel File** (with extension ".xls") in the folder named "GAMS_Files" that contain the input data "M1_data.xlsx" and "M2_data.xlsx" for the waterfall and agile scenarios, respectively.
+7.	**Excel Files** (with extension ".xls") in the folder named "GAMS_Files" that contain the input data "M1_data.xlsx" and "M2_data.xlsx" for the waterfall and agile scenarios, respectively.
