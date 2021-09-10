@@ -1,6 +1,6 @@
 ################################################################
 ##Model NPD1 - Decomposition                                   #
-##November 15, 2017                                            #       ################################################################
+##November 23, 2017                                            #       ################################################################
 
 param r >=0;
 
@@ -18,7 +18,7 @@ set Tilde_T = a .. TT;
 
 param F >=0;          # fixed costs
 param U >=0;          # maximum number of projects
-param p >=0.05, <=1;   # probability level
+param p >=0.5, <=1;   # probability level
 param R;              # return level
 param q{k in K_test} :=1/card(K_test);
 param s{i in I} >=0, integer;  # starting time of i
@@ -39,8 +39,8 @@ var x{t in 1..r,i in It[t]} binary;
 var beta{k in K_test, t in r..r} binary;
 #########################################
 
-minimize OBJ_VAR_DECOMP: r;
-#minimize OBJ-2: sum{k in K_test} beta[k,r]; 
+minimize OBJ_VAR_DECOMP_2: sum{k in K_test} beta[k,r]; 
+#minimize OBJ-2:r;
 ##########################################
 
 subject to 1c_DECOMP{t in 1..r}: 

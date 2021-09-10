@@ -1,0 +1,121 @@
+#############################################################
+## Run Model & Data 1 - Decomposition Method
+## Determine Largest Return per period 
+## November 24, 2017
+################################################################
+reset;
+reset;
+
+model NPD1_Decomp-Nov15_2017.mod;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+set DATASETS:= {1}; #{2,3};
+set SceVALUES:={1000};#{500,1000}; 
+set pVALUES:={1}; #, 1};#{0.9, 0.95};
+set RValues {i in 11..11};
+
+
+param TIME{i in DATASETS, ii in pVALUES, iii in SceVALUES, k in 3..20, j in RValues[k]} >=0, default 0;
+#param TIME_ij{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues}; 
+param trans, default 0;
+param counter >=0;
+#param r_best{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in 0..card(RValues)}, default 3;
+param r_id;
+
+
+param comple_K >=0, default 0;
+param ini_K >=0, default 0;
+param ABAND_overall >=0, default 0;
+param duration_K >=0, default 0;
+param duration_average >=0, default 0;
+#param duration >=0, default 0;
+
+###############################################################
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD1_2017-11-22_" & AAA & ".dat");
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+let counter:=0;
+let duration_K:=0;
+let ini_K:=0;
+let duration_average:=0;
+let comple_K:=0;
+#let counter:=counter+1;
+#let r_id:= if FFF <= 1 then 0 else 1; #member(FFF,RValues),k,j]
+
+for{GGG in 11..11} {
+#for{GGG in r_best[AAA,BBB,CCC,counter-1]+r_id..20} {
+let r:=GGG;
+#let RValues[3]:= {0,-0.1,-0.2,-0.3};
+#let RValues[4]:= {1.9,1.8,1.7};
+#let RValues[5]:= {3,2.9,2.8};
+#let RValues[6]:= {3,2.9};
+#let RValues[7]:= {4.5};
+#let RValues[8]:= {2};
+#let RValues[9]:= {7.3,7.2};
+#let RValues[10]:= {4.4};
+let RValues[11]:= {4.4}; 
+#let RValues[12]:= {10.4, 10.3};
+#let RValues[13]:= {12.6, 12.4};
+#let RValues[14]:= {13.5};
+#let RValues[15]:= {15.5,15};
+#let RValues[16]:= {16.5,16};
+#let RValues[17]:= {17.5,17};
+#let RValues[18]:= {18.9};
+#let RValues[20]:= {20};
+#let RValues[19]:= {19.5};
+
+
+for {FFF in RValues[GGG]}{
+let R:=FFF; 
+
+display AAA,p,KK_test,R,r; 
+display r;
+display counter;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=2000' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA, BBB, CCC, r,FFF]:= _solve_elapsed_time; 
+display DECOMPO.result;
+for{i in I: f[i]=r}{
+if x[r,i]=1 then let comple_K:= comple_K+1;
+if x[r,i]=1 then let duration_K:= duration_K + f[i]-s[i]+1;
+}
+
+let duration_average:= if comple_K >0 then duration_K/comple_K; 
+
+
+
+
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,DECOMPO.result, duration_average   >>
+Results_NPD1-MaxRETURN_Sept12_2018.txt; 
+
+
+if DECOMPO.result = "solved" then break;
+}
+
+
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f\n" ,  AAA, p,KK_test,R,r  >> NPD1-MaxRETURN_Sept12_2018.txt;
+display DECOMPO.result  >> NPD1-MaxRETURN_Sept12_2018.txt;
+
+}
+}
+}
+}
+
+
+########################################################
+stop;
+########################################################
+

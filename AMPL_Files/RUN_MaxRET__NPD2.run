@@ -1,0 +1,105 @@
+###############################################################
+## Run Model & Data 2 - Decomposition Method
+## Determine options
+## November 24, 2017
+################################################################
+reset;
+reset;
+
+model NPD2_Decomp-Nov15_2017.mod;
+problem DECOMPO: OBJ_VAR_DEC2,y,beta,6a_DEC,6b_DEC,6c_DEC, 2d_DEC;
+
+set DATASETS:= {1}; #{2,3};
+set SceVALUES:={500};#{500,1000}; 
+set pVALUES:={0.9};#{0.9, 0.95};
+set RValues {i in 3..20};
+
+param TIME{i in DATASETS, ii in pVALUES, iii in SceVALUES, k in 3..20, j in RValues[k]} >=0, default 0;
+#param TIME_ij{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues}; 
+param trans, default 0;
+param counter >=0;
+
+###############################################################
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD2_2017-11-22_" & AAA & ".dat");
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+let counter:=0;
+
+
+for{GGG in 18..18} {
+let r:=GGG;
+let RValues[3]:= {-0.1,-0.2,-0.3};
+let RValues[4]:= {2.9,2.8,2.7};
+let RValues[5]:= {5.2,5.1};
+let RValues[6]:= {6.3,6.2};
+let RValues[7]:= {7.2};
+let RValues[8]:= {9.5,9.4,9.3};
+let RValues[9]:= {0};
+let RValues[10]:= {13.4,13.3,13.2,13.1,13};
+let RValues[11]:= {15.2,15.1};
+let RValues[12]:= {16.6, 16.5};
+
+let RValues[13]:= {18.9,18.8};
+let RValues[14]:= {21.5, 20.5};
+let RValues[15]:= {23,22.5};
+let RValues[16]:= {26,25.5,24.7};
+let RValues[17]:= {27.5,26.8};
+let RValues[18]:= {26.4,26.2,26,25.8};
+let RValues[19]:= {27};
+let RValues[20]:= {23,22};
+
+
+
+for {FFF in RValues[GGG]}{
+let R:=FFF; 
+
+display AAA,p,KK_test,R,r; 
+display r;
+display counter;
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1800' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA, BBB, CCC, r,FFF]:= _solve_elapsed_time; 
+########_ampl_elapsed_time; # + _total_solve_elapsed_time; 
+display DECOMPO.result;
+if DECOMPO.result = "solved" then break;
+}
+
+#let TIME_ij[AAA,BBB,CCC,FFF]:= sum{k in 3..r} TIME[AAA,BBB,CCC,k,FFF];
+#let trans:=TIME_ij[AAA,BBB,CCC,FFF];
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,DECOMPO.result   >> Results_NPD1-MaxRETURN_Nov24_2017.txt; 
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f\n" ,  AAA, p,KK_test,R,r  >> NPD2-MaxRETURN_Nov24_2017.txt;
+display DECOMPO.result  >> NPD2-MaxRETURN_Nov24_2017.txt;
+
+}
+}
+}
+}
+
+
+########################################################
+stop;
+########################################################
+
+
+
+
+
+
+
+
+
+
+

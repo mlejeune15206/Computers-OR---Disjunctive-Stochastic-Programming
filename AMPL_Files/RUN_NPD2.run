@@ -1,0 +1,85 @@
+################################################################
+## Run Model & Data 2 - Decomposition Method
+## November 21, 2017
+################################################################
+reset;
+reset;
+
+model NPD2_Decomp-Nov15_2017.mod;
+data 2Data_NPD2_2017-11-20.dat;
+problem DECOMPO: OBJ_VAR_decomp2, y, beta, 6a_DEC, 6b_DEC, 6c_DEC, 2d_DEC;
+#, STREN;
+
+
+let KK_test:=500;
+let p:=0.95;
+#set RValues:= {-3,-2,-1,0,1, 2, 3,4,5,6,7,8,9,10,11,12,13,14};
+
+set RValues:= {15,16,17,18,19,20,21};
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+
+for {FFF in RValues}{
+let R:=FFF; 
+display R >> Results_NPD2-DEC_NOV20.txt; 
+for{j in 11..20} {
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1500' 'threads=1'; # 'presolve=0';
+solve DECOMPO > NPD1-DEC_out.txt;
+
+option omit_zero_rows 1;
+option omit_zero_cols 1;
+
+display DECOMPO.result;
+display r,R;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, y, r, p, R >> Results_NPD2-DEC_NOV20.txt; 
+}
+
+
+reset;
+reset;
+
+
+
+
+
+
+
+
+########################################################
+stop;
+########################################################
+for{t in Tilde_T} {
+	for{k in K_test} {
+		for{kk in K_test: kk > k} {
+                for{i in Ct[t]} { 
+			if(M_intermediary_tilde_xi[k,i]<=M_intermediary_tilde_xi[kk,i])
+			then {
+					let sum_ind[k,kk,t]:=sum_ind[k,kk,t]+1;}
+			};
+
+		};
+	};
+};
+
+let {k in K_test, kk in k+1..card(K_test), t in Tilde_T} indicator[k,kk,t]:= if sum_ind[k,kk,t] = card(Ct[t]) then 1 else 0;
+
+if Time[3].dual = previous_dual then continue;
+break
+
+repeat while Time[3].dual > 0 { . . . };
+repeat until Time[3].dual = 0 { . . . };
+repeat { . . . } while Time[3].dual > 0;
+repeat { . . . } until Time[3].dual = 0;
+
+solve sub_problem; 
+if sub_problem.result= "infeasible" then { 
+let nsoln:= nsoln +1; 
+for {j in t1} {let Ljinf[nsoln,j] := Lj[j];} 
+for {k in t2}  {let Lkinf[nsoln,k] := Lk[k];} 
+} 
+else if sub_problem.result = "solved" then { 

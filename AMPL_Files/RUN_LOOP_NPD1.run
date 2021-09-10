@@ -1,0 +1,69 @@
+################################################################
+## Run Model & Data 1 - Decomposition Method
+## Loop
+## November 22, 2017
+################################################################
+reset;
+reset;
+
+
+model NPD1_Decomp-Nov15_2017.mod;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+
+set DATASETS:= {1,2,3,4,5,6,7,8,9,10};
+set RValues:= {-1,0,1,3,5,7,9,11,13,15};
+set SceVALUES:={500, 1000};
+set pVALUES:={0.95, 0.9};
+
+param TIME{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues, k in 3..20} >=0, default 0;
+param TIME_ij{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues}; 
+param trans;
+###############################################################
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD1_2017-11-22_" & AAA & ".dat");
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+
+for {FFF in RValues}{
+let R:=FFF; 
+
+for{GGG in 3..20} {
+let r:=GGG;
+display AAA,p,KK_test,R,r; 
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=2400' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA, BBB, CCC, FFF, GGG]:= _solve_elapsed_time; 
+#_ampl_elapsed_time;
+# + _total_solve_elapsed_time; 
+display DECOMPO.result;
+if DECOMPO.result = "solved" then break;
+}
+
+let TIME_ij[AAA,BBB,CCC,FFF]:= sum{k in 3..r} TIME[AAA,BBB,CCC,FFF,k];
+let trans:=TIME_ij[AAA,BBB,CCC,FFF];
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,trans >> Results_NPD1-LOOP_Nov22_2017.txt; 
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f%12.3f\n" ,  AAA, p,KK_test,R,r,trans >> NPD1-LOOP_Nov22_2017.txt;
+
+}
+}
+}
+}
+
+
+########################################################
+stop;
+########################################################

@@ -1,0 +1,91 @@
+################################################################
+## Run Model & Data 2 - Decomposition Method
+## Loop
+## November 24, 2017
+################################################################
+reset;
+reset;
+
+model NPD2_Decomp-Nov15_2017.mod;
+problem DECOMPO: OBJ_VAR_DEC2,y,beta,6a_DEC,6b_DEC,6c_DEC, 2d_DEC;
+
+set DATASETS:= {1,2,3,4,5};#{6,7,8,9,10};
+set RValues:= {7}; #{-1,0,1,4,7,10,13};
+set SceVALUES:={500}; #, 1000}; #{500, 1000};
+set pVALUES:={0.99,0.95,0.90};
+
+param TIME{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues, k in 3..20} >=0, default 0;
+param TIME_ij{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues}; 
+param trans;
+param counter >=0;
+param r_best{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in 00..card(RValues)}, default 3;
+param r_id;
+
+###############################################################
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD2_2017-11-22_" & AAA & ".dat");
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+let counter:=0;
+
+for {FFF in RValues}{
+let R:=FFF; 
+let counter:=counter+1;
+let r_id:= if FFF <= 1 then 0 else 1; #member(FFF,RValues),k,j]
+
+for{GGG in 3..8} { 
+#r_best[AAA,BBB,CCC,counter-1]+r_id..20} {
+let r:=GGG;
+##max(GGG,r_best[AAA,BBB,CCC,counter-1]);
+display AAA,p,KK_test,R,r; 
+display r;
+display counter;
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA, BBB, CCC, FFF, r]:= _solve_elapsed_time; 
+#####  _ampl_elapsed_time; #### + _total_solve_elapsed_time; 
+display DECOMPO.result;
+#display DECOMPO.result >> Results_NPD1-LOOP3_Dec2_2017.txt; 
+if DECOMPO.result = "solved" then let r_best[AAA,BBB,CCC,counter]:= r;
+if DECOMPO.result = "solved" then break;
+}
+
+let TIME_ij[AAA,BBB,CCC,FFF]:= sum{k in 3..r} TIME[AAA,BBB,CCC,FFF,k];
+let trans:=TIME_ij[AAA,BBB,CCC,FFF];
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,trans >> Results_NPD2-LOOP_Dec2_2017.txt; 
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f%12.3f\n" ,  AAA, p,KK_test,R,r,trans >> NPD2-LOOP_Dec2_2017.txt;
+
+#display{k in K_test, t in 1..r, i in Itk[t,k]: y[k,f_k[k,i],
+#i]=1} y[k,t,i] >> NPD2-LOOP_Dec2_2017.txt;
+
+display y >> NPD2-LOOP_Dec2_2017.txt;
+
+
+}
+}
+}
+}
+
+
+########################################################
+stop;
+########################################################
+
+
+
+
+
+

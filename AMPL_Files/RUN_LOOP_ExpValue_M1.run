@@ -1,0 +1,81 @@
+################################################################
+## Run Expected Value Model M1 
+## Loop
+## November 23, 2017
+################################################################
+reset;
+reset;
+
+model NPD_ExpVal_M1-Nov23_2017.mod;
+problem EXPval: OBJ_VAR_EXPVAL, x, 1c_DECOMP, 1d_DECOMP, EXP_VALUE; 
+
+set DATASETS:= {1,2,3,4,5};
+set RValues:= {-1,0,1,4,7,10,13};
+set SceVALUES:= {500, 1000};
+
+param TIME{i in DATASETS, iii in SceVALUES, j in RValues, k in 3..20} >=0, default 0;
+param TIME_ij{i in DATASETS, iii in SceVALUES, j in RValues}; 
+param trans;
+param counter >=0;
+param r_best{i in DATASETS, iii in SceVALUES, j in 00..card(RValues)}, default 3;
+
+param bin_rel {i in DATASETS, iii in SceVALUES, j in RValues, k in 3..20, kkk in 1..KK_test} >=0, default 0;
+param reliability {i in DATASETS, iii in SceVALUES, j in RValues, k in 3..20} >=0, default 0;
+param REL;
+###############################################################
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD1_2017-11-22_" & AAA & ".dat");
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+let counter:=0;
+
+for {FFF in RValues}{
+let R:=FFF; 
+let counter:=counter+1;
+
+for{GGG in r_best[AAA,CCC,counter-1]..20} {
+let r:=GGG;
+display AAA,KK_test,R,r; 
+#display r, counter;
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve EXPval;
+let TIME[AAA, CCC, FFF, r]:= _solve_elapsed_time; 
+display EXPval.result;
+
+
+if EXPval.result = "solved" then {
+let r_best[AAA,CCC,counter]:=r;
+
+
+let{k in 1..KK_test} bin_rel[AAA,CCC,FFF,GGG,k]:= 
+if (sum{t in a..r} sum{i in Ct[t]} x[t,i] * tilde_xi[k,i,t])-r*F >= R then 1 else 0;
+
+let reliability[AAA,CCC,FFF,GGG]:= sum{k in 1..KK_test} bin_rel[AAA,CCC,FFF,r,k] / KK_test;
+break;
+}
+}
+
+let TIME_ij[AAA,CCC,FFF]:= sum{k in 3..r} TIME[AAA,CCC,FFF,k];
+let trans:=TIME_ij[AAA,CCC,FFF];
+let REL:= reliability[AAA,CCC,FFF,r];
+display AAA,KK_test,R,r,trans,REL;
+display AAA,KK_test,R,r,trans,REL >> Results_EXPVAL_M1_Nov23_2017.txt; 
+
+printf "%5.0f%8.1f%5.1f%5.1f%12.3f%12.3f\n" , AAA,KK_test, R,r,trans,REL >> EXPVAL_M1_Nov23_2017.txt;
+
+}
+}
+}
+
+
+########################################################
+stop;
+########################################################
+
