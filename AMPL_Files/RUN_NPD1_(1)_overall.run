@@ -1,0 +1,17 @@
+################################################################
+## Run Model & Data 1 - Decomposition Method
+## Sept 6, 2018 - Part (2) 
+################################################################
+reset;
+reset;
+
+include RUN_NPD1_Sept6_(1)_1.run;
+include RUN_NPD1_Sept6_(1)_2.run;
+include RUN_NPD1_Sept6_(1)_3.run;
+include RUN_NPD1_Sept6_(1)_4.run;
+include RUN_NPD1_Sept6_(1)_5.run;
+
+reset;
+reset;
+
+########################################################

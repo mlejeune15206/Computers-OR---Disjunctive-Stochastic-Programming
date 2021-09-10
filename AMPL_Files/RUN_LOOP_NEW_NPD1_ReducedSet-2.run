@@ -1,0 +1,82 @@
+################################################################
+## Run Model1 & Data - Decomposition Method
+## New model M1
+## Loop
+## Reduced set of scenarios
+## September 9, 2018
+################################################################
+reset;
+reset;
+
+model NEW_Reduced_Set_NPD1_DECOMP-Sept9_2018.mod;
+
+problem DECOMPO: OBJ_VAR_DECOMP,x,beta,1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; #, STREN;
+
+set DATASETS:= {2000};
+set RValues:= {7}; 
+set SceVALUES:={500}; #, 1000}; #{500, 1000};
+set pVALUES:={0.95};
+
+param TIME{i in DATASETS, ii in pVALUES, j in RValues, k in 3..20} >=0, default 0;
+param TIME_ij{i in DATASETS, ii in pVALUES, j in RValues}; 
+param trans;
+param counter >=0, default 0;
+param r_best{i in DATASETS, ii in pVALUES, j in 00..card(RValues)}, default 3;
+param r_id;
+
+###############################################################
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD1_2017-11-22_1_Reduced_" & AAA & ".dat");
+let KK_test:=AAA; 
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+
+for {FFF in RValues}{
+let R:=FFF; 
+let counter:=counter+1;
+let r_id:= if FFF <= 1 then 0 else 1; #member(FFF,RValues),k,j]
+
+for{GGG in 5..19} { 
+let r:=GGG;
+display AAA,p,KK_test,R,r; 
+display r;
+display counter;
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA, BBB, FFF, r]:= _solve_elapsed_time; 
+display DECOMPO.result;
+if DECOMPO.result = "solved" then let r_best[AAA,BBB,counter]:= r;
+if DECOMPO.result = "solved" then break;
+}
+
+let TIME_ij[AAA,BBB,FFF]:= sum{k in 3..r} TIME[AAA,BBB,FFF,k];
+let trans:=TIME_ij[AAA,BBB,FFF];
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,trans >> Results_NEW_REDUCED_SET_NPD1_LOOP_Sept9_2018.txt; 
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f%12.3f\n" , AAA,p,KK_test,R,r,trans >> Results_NEW_REDUCED_SET_NPD1_LOOP_Sept9_2018.txt;
+
+display x >> Results_NEW_REDUCED_SET_NPD1_LOOP_Sept9_2018.txt;
+display "----------------" >> Results_NEW_REDUCED_SET_NPD1_LOOP_Sept9_2018.txt;
+
+
+}
+}
+}
+
+
+
+
+########################################################
+stop;
+########################################################
+

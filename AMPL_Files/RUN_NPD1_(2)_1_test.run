@@ -1,0 +1,95 @@
+################################################################
+## Run Model & Data 1 - Decomposition Method
+## Sept 6, 2018 - Part (2) 
+################################################################
+reset;
+reset;
+
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; #, STREN;
+
+
+display "Data_NPD1_2017-11-22_1" >> Results-NPD1_SEPT6-Part1.txt; 
+
+
+#let KK_test:=500;
+set p_values:={0.9};
+set RValues:= {7}; 
+set KK_test_values:= {2000};
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for {FFF in RValues}{
+for {GGG in KK_test_values}{
+for {HHH in p_values}{
+
+for{j in 3..15} {
+let R:=FFF; 
+let KK_test:=GGG; 
+let p:= HHH;
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO; # > NPD1-SEPT6_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, r, p, R, KK_test,x >> Results-NPD1_SEPT6-Part1.txt; 
+}
+}
+}
+reset;
+reset;
+
+
+
+
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; #, STREN;
+
+
+display "Data_NPD1_2017-11-22_1-Several threads" >> Results-NPD1_SEPT6-Part1.txt; 
+
+
+#let KK_test:=500;
+set p_values:={0.9};
+set RValues:= {7}; 
+set KK_test_values:= {2000};
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for {FFF in RValues}{
+for {GGG in KK_test_values}{
+for {HHH in p_values}{
+
+for{j in 3..15} {
+let R:=FFF; 
+let KK_test:=GGG; 
+let p:= HHH;
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000'; 
+solve DECOMPO; # > NPD1-SEPT6_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, r, p, R, KK_test,x >> Results-NPD1_SEPT6-Part1.txt; 
+}
+}
+}
+reset;
+reset;
+
+
+########################################################
+########################################################

@@ -1,0 +1,113 @@
+################################################################
+## Run Model & Data 2 - Decomposition Method
+## New model M2
+## Loop
+## Test (1) M2
+## September 9, 2018
+################################################################
+reset;
+reset;
+
+model NEW_NPD2_DECOMP-Sept8_2018.mod;
+problem DECOMPO: OBJ_VAR_DEC2,y,beta,6a_DEC,6b_DEC,6c_DEC, 2d_DEC;
+
+set DATASETS:= {5};
+set RValues:= {1,7,13}; 
+set SceVALUES:={500,1000,2000};
+set pVALUES:={0.9,0.95};
+
+param TIME{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues, k in 1..20} >=0, default 0;
+param TIME_ij{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in RValues}; 
+param trans;
+param counter >=0;
+param r_best{i in DATASETS, ii in pVALUES, iii in SceVALUES, j in 00..card(RValues)}, default 3;
+param r_id;
+
+param comple_K{k in 1..KK_test} >=0, default 0;
+param ini_K{k in 1..KK_test} >=0, default 0;
+param ABAND_overall >=0, default 0;
+param duration_K{k in 1..KK_test} >=0, default 0;
+param duration_average >=0, default 0;
+
+###############################################################
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+###############################################################
+
+for {AAA in DATASETS}{
+reset data;
+data ("Data_NPD2_2018-06-26_" & AAA & ".dat");
+let KK_test:=AAA; 
+
+for {BBB in pVALUES}{
+let p:=BBB;
+
+for {CCC in SceVALUES}{
+let KK_test:=CCC;
+let counter:=0;
+
+for {FFF in RValues}{
+let R:=FFF; 
+let counter:=counter+1;
+let r_id:= if FFF <= 1 then 0 else 1; 
+
+for{GGG in 1..16} { 
+let r:=GGG;
+let{k in 1..KK_test} comple_K[k]:=0;
+let{k in 1..KK_test} ini_K[k]:=0;
+let ABAND_overall:=0; 
+let {k in 1..KK_test} duration_K[k]:=0;  
+let duration_average:=0;
+
+display AAA,p,KK_test,R,r; 
+display r;
+display counter;
+
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO;
+let TIME[AAA,BBB,CCC,FFF,r]:= _solve_elapsed_time; 
+display DECOMPO.result;
+if DECOMPO.result = "solved" then let r_best[AAA,BBB,CCC,counter]:= r;
+if DECOMPO.result = "solved" then break;
+}
+
+let TIME_ij[AAA,BBB,CCC,FFF]:= sum{k in 1..r} TIME[AAA,BBB,CCC,FFF,k];
+let trans:=TIME_ij[AAA,BBB,CCC,FFF];
+display AAA,p,KK_test,R,r,trans;
+display AAA,p,KK_test,R,r,trans >> 
+Results_NEW_SMALL_SET_NPD2-LOOP_Sept9_2018_(1).txt;
+
+
+printf "%5.0f%8.3f%8.1f%5.1f%5.1f%12.3f\n" ,  AAA, p,KK_test,R,r,trans >> Results_NEW_SMALL_SET_NPD2-LOOP_Sept9_2018_(1).txt;
+
+for{k in 1..KK_test} { 
+for{i in I: s[k,i] <=r}{
+if y[k,s[k,i],i]=1 then let ini_K[k]:= ini_K[k]+1;
+}
+}
+
+
+for{k in 1..KK_test} { 
+for{i in I: f_k[k,i]<=r}{
+if y[k,s[k,i],i]=1 then let ini_K[k]:= ini_K[k]+1;
+if y[k,f_k[k,i],i]=1 then let comple_K[k]:= comple_K[k]+1;
+if y[k,f_k[k,i],i]=1 then let duration_K[k]:= duration_K[k] + d_k[i,k];
+}
+}
+
+
+let ABAND_overall:= sum{k in 1..KK_test: ini_K[k] > 0} (1- comple_K[k] /ini_K[k])/KK_test; 
+let duration_average:= sum{k in 1..KK_test: comple_K[k] > 0}  (duration_K[k]/comple_K[k]) / KK_test; 
+display ABAND_overall, duration_average >> Results_NEW_SMALL_SET_NPD2-LOOP_Sept9_2018_(1).txt;
+
+
+}
+}
+}
+}
+
+########################################################
+stop;
+########################################################
+

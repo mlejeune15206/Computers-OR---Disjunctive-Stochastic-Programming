@@ -1,0 +1,116 @@
+################################################################
+## Run Model & Data 1 - Decomposition Method
+## Sept 8, 2018 - Part (1) 
+################################################################
+reset;
+reset;
+
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+display "Data_NPD1_2017-11-22_1" >> Results-NPD1_SEPT12-Part1.txt; 
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for{j in 5..16} {
+let R:=7; 
+let KK_test:=2000; 
+let p:= 0.9;
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO; # > NPD1-SEPT8_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, _total_solve_elapsed_time, r, p, R, KK_test,x >> Results-NPD1_SEPT12-Part1.txt; 
+reset;
+reset;
+
+#######################################
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for{j in 13..16} {
+let R:=13; 
+let KK_test:=2000; 
+let p:= 0.9;
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO; # > NPD1-SEPT8_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, _total_solve_elapsed_time, r, p, R, KK_test,x >> Results-NPD1_SEPT12-Part1.txt; 
+reset;
+reset;
+
+
+##############################
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for{j in 6..16} {
+let R:=7; 
+let KK_test:=2000; 
+let p:= 0.95
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO; # > NPD1-SEPT8_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, _total_solve_elapsed_time, r, p, R, KK_test,x >> Results-NPD1_SEPT12-Part1.txt; 
+reset;
+reset;
+
+#############################
+model NPD1_Decomp-Nov15_2017.mod;
+data Data_NPD1_2017-11-22_1.dat;
+problem DECOMPO: OBJ_VAR_DECOMP, x, beta, 1c_DECOMP, 1d_DECOMP, 2c_DECOMP, 2d_DECOMP; 
+
+param sum_ind{k in K_test, kk in k+1..card(K_test), t in Tilde_T}>=0, default 0;
+
+for{j in 15..16} {
+let R:=13; 
+let KK_test:=2000; 
+let p:= 0.95;
+
+let r:=j;
+option presolve 0;
+option solver cplex;
+option cplex_options 'time=1000' 'threads=1'; 
+solve DECOMPO; # > NPD1-SEPT8_out.txt;
+
+display DECOMPO.result;
+display r;
+if DECOMPO.result = "solved" then break;
+}
+display _ampl_elapsed_time, _total_solve_time, _total_solve_elapsed_time, r, p, R, KK_test,x >> Results-NPD1_SEPT12-Part1.txt; 
+reset;
+reset;
+
+
+########################################################
+########################################################
