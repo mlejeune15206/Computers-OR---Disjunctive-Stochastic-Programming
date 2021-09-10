@@ -39,22 +39,22 @@ year =          {2021}
 **Content**
 
 This repository includes
-1.   **AMPL Data Files** under the folder “FinalDataFiles.” We consider ten instances, and index the data folders from 1 to 10, accordingly. 
+1.   **AMPL Data Files** (with extension ".dat") in the folder named "AMPL_Files" that contain the data instances used in this study. 
 
 
-2.	**AMPL Mod File** (FinalModFile.mod)
+2.	**AMPL Model Files** (with extension ".mod") in the folder named "AMPL_Files" that contain the formulations of the models proposed in this study and the formulation of the proposed valid inequalities. 
 
-3.	**AMPL Main Run Files** such as “FinalAlternativeFormulations_COM.run.” Several run files are created to solve a particular set of MIP formulations, allowing efficient batch  	runs. For example, “FinalAlternativeFormulations_COM.run” is used to solve the following four MIP formulations under a particular set of parameter setting: 
+3.	**AMPL Script Files** (with extension ".run") in the folder named "AMPL_Files" that contain the implmentation of the decompostion method propod in this study. 
 
-	- Cost minimizing basic completely comonotone MILP (CCM)
+4.	**GAMS Command File** (with extension ".run") in the folder named "GAMS_Files") that implements the scenarion generation method proposed by Heitsch et al. (2008) and that we slightly adapted to this study. The scenario generation method is presented in:
 
-	- Budget-constrained basic completely comonotone MILP (CCM)
+H. Heitsch, W. Roemisch, and C. Strugarek. Stability of Multistage Stochastic Programs. SIAM Journal on Optimization 17, 511-525. 2006.
 
-	- Budget-Constrained. 
+and the original package file scenred2 at:
+www.gams.com/latest/docs/T_SCENRED2.html.
 
-	The comments on the mod file along with the problem definitions in the main run files provide insights about the alternative MIP formulations considered in our study.
+5.	**GAMS Model File** (with extension ".gms) in the folder named "GAMS_Files". 
 
-4.	We created additional run files to get results for a batch of main run files under different parameter settings. These files are provided under the folder “Batch-RunFiles.” For illustrative purposes, each type of file is given for a particular instance index such as DataSet5; we basically modify the index information to get results for the other instances.
+6.	**GAMS Parameter File** (with extension ".opt") in the folder named "GAMS_Files" that specifies the options used for GAMS. 
 
-5.	All the output files obtained in our computational study are available under the folder “OutputFiles.” Since there is a very large number of output files (almost two thousand problem instances), for convenience, we also provided the excel files including the key results retrieved from the output files. 
-
+7.	**Excel File** (with extension ".xls") in the folder named "GAMS_Files" that contain the input data "M1_data.xlsx" and "M2_data.xlsx" for the waterfall and agile scenarios, respectively.
