@@ -7,8 +7,6 @@
 
 **Authors**: J. Kettunen, M.A. Lejeune 
 
-This archive is distributed in association with the INFORMS Journal on Computing under the MIT License.
-
 M. Lejeune acknowledges the support of the National Science Foundation [Grant ECCS?2114100] and of the Office of Naval Research [Grant N000141712420] for this study.
 
 <!-- blank line --> 
@@ -26,8 +24,8 @@ To cite this paper and the data saved in this repository, please  using the foll
  journal =     {Computers \& Operations Research},
 
  title =         {Data-Driven Project Portfolio Selection: Stochastic Programming Formulations with Reliability and Time to Market Requirements},
- 
-  year =          {2021 -- revised and resubmitted},
+
+year =          {2021 -- revised and resubmitted},
 }  
 
 <!-- blank line --> 
