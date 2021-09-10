@@ -48,7 +48,7 @@ This repository includes:
 
 4.	**GAMS Command File** (with extension ".run") in the folder named "GAMS_Files") that implements the scenarion generation method proposed by Heitsch et al. (2008) and that we slightly adapted to this study. The scenario generation method is presented in:
 
-$\quad$ H. Heitsch, W. Roemisch, C. Strugarek. Stability of Multistage Stochastic Programs. *SIAM Journal on Optimization* 17, 511-525. 2006.
+&nbsp;&nbsp;&nbsp;&nbsp; H. Heitsch, W. Roemisch, C. Strugarek. Stability of Multistage Stochastic Programs. *SIAM Journal on Optimization* 17, 511-525. 2006.
 
 $\qquad$ and the original package file scenred2 at:
 www.gams.com/latest/docs/T_SCENRED2.html.
